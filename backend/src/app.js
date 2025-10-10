@@ -1,11 +1,15 @@
-const express = require('express');
-const cors = require('cors');
-const noteRoutes = require('./routes/noteRoutes');
+import express from 'express';
+import cors from 'cors';
+import noteRoutes from './routes/noteRoutes.js';
 
 const app = express();
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN?.split(',') || '*',
+  credentials: process.env.CORS_CREDENTIALS === 'true' || false
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -44,4 +48,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-module.exports = app;
+export default app;

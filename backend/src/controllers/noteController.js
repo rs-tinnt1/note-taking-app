@@ -1,4 +1,4 @@
-const Note = require('../models/Note');
+import Note from '../models/Note.js';
 
 // Create a new note
 const createNote = async (req, res) => {
@@ -121,7 +121,7 @@ const deleteNote = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   createNote,
   getAllNotes,
   getNoteById,
