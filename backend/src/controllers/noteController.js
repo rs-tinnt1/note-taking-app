@@ -4,13 +4,16 @@ import Note from '../models/Note.js';
 const createNote = async (req, res) => {
   try {
     const { title, content } = req.body;
+    const owner = req.user.userId; // Get owner from JWT
     
     const note = new Note({
       title,
-      content
+      content,
+      owner
     });
     
     const savedNote = await note.save();
+    
     res.status(201).json({
       success: true,
       data: savedNote
@@ -26,7 +29,9 @@ const createNote = async (req, res) => {
 // Get all notes
 const getAllNotes = async (req, res) => {
   try {
-    const notes = await Note.find().sort({ _id: -1 }); // Sort by newest first
+    const owner = req.user.userId; // Get owner from JWT
+    const notes = await Note.findNotDeleted({ owner })
+      .sort({ createdAt: -1 }); // Sort by newest first
     res.status(200).json({
       success: true,
       count: notes.length,
@@ -44,7 +49,9 @@ const getAllNotes = async (req, res) => {
 const getNoteById = async (req, res) => {
   try {
     const { id } = req.params;
-    const note = await Note.findById(id);
+    const owner = req.user.userId; // Get owner from JWT
+    
+    const note = await Note.findOneNotDeleted({ _id: id, owner });
     
     if (!note) {
       return res.status(404).json({
@@ -70,9 +77,10 @@ const updateNote = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, content } = req.body;
+    const owner = req.user.userId; // Get owner from JWT
     
-    const note = await Note.findByIdAndUpdate(
-      id,
+    const note = await Note.findNotDeletedAndUpdate(
+      { _id: id, owner },
       { title, content },
       { new: true, runValidators: true }
     );
@@ -100,7 +108,9 @@ const updateNote = async (req, res) => {
 const deleteNote = async (req, res) => {
   try {
     const { id } = req.params;
-    const note = await Note.findByIdAndDelete(id);
+    const owner = req.user.userId; // Get owner from JWT
+    
+    const note = await Note.findNotDeletedAndDelete({ _id: id, owner });
     
     if (!note) {
       return res.status(404).json({

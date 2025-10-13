@@ -6,8 +6,12 @@ import {
   updateNote,
   deleteNote
 } from '../controllers/noteController.js';
+import { authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
+
+// Apply authentication middleware to all note routes
+router.use(authenticate);
 
 // POST /api/notes - Create a new note
 router.post('/', createNote);
