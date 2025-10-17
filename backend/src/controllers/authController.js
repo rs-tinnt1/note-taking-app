@@ -7,6 +7,45 @@ const register = async (req, res) => {
   try {
     const { name, email, password } = req.body
 
+    // Validate required fields
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      })
+    }
+
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password is required'
+      })
+    }
+
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name is required'
+      })
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please enter a valid email'
+      })
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters'
+      })
+    }
+
     // Check if user already exists
     const existingUser = await User.findOneNotDeleted({ email })
     if (existingUser) {
@@ -26,7 +65,7 @@ const register = async (req, res) => {
     const savedUser = await user.save()
 
     // Generate tokens
-    const accessToken = generateAccessToken(savedUser._id, savedUser.email)
+    const accessToken = generateAccessToken(savedUser._id, savedUser.email, savedUser.name)
     const refreshToken = generateRefreshToken(savedUser._id, savedUser.email)
 
     // Store refresh token in database
@@ -43,7 +82,7 @@ const register = async (req, res) => {
     res.status(201).json({
       success: true,
       data: {
-        user: savedUser,
+        user: savedUser.toObject(),
         accessToken
       }
     })
@@ -59,6 +98,21 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body
+
+    // Validate required fields
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      })
+    }
+
+    if (!password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password is required'
+      })
+    }
 
     // Find user with password
     const user = await User.findOneNotDeleted({ email }).select('+password')
@@ -79,7 +133,7 @@ const login = async (req, res) => {
     }
 
     // Generate tokens
-    const accessToken = generateAccessToken(user._id, user.email)
+    const accessToken = generateAccessToken(user._id, user.email, user.name)
     const refreshToken = generateRefreshToken(user._id, user.email)
 
     // Store refresh token in database
@@ -161,8 +215,17 @@ const refreshToken = async (req, res) => {
       })
     }
 
+    // Get user info for generating access token
+    const user = await User.findByIdNotDeleted(decoded.userId)
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not found'
+      })
+    }
+
     // Generate new access token
-    const accessToken = generateAccessToken(decoded.userId, decoded.email)
+    const accessToken = generateAccessToken(user._id, user.email, user.name)
 
     res.status(200).json({
       success: true,

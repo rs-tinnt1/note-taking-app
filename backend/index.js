@@ -12,9 +12,6 @@ import connectDB from './src/config/database.js'
 
 const port = process.env.PORT || 8080
 
-console.log('TEST port', process.env.PORT)
-console.log('TEST URI', process.env.MONGODB_URI)
-
 // Connect to database and start server
 const startServer = async () => {
   try {

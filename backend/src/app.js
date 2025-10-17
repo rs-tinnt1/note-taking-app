@@ -27,9 +27,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs, {
 }))
 
 // Routes
-console.log('Registering auth routes...')
 app.use('/api/auth', authRoutes)
-console.log('Auth routes registered')
 app.use('/api/notes', noteRoutes)
 app.use('/api/users', userRoutes)
 

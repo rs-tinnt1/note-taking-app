@@ -55,10 +55,7 @@ const router = express.Router()
  *             schema:
  *               $ref: '#/components/schemas/ValidationError'
  */
-router.post('/register', (req, res) => {
-  console.log('Register route hit')
-  register(req, res)
-})
+router.post('/register', register)
 
 /**
  * @swagger

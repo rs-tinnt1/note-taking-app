@@ -1,6 +1,7 @@
 import express from 'express'
 import {
   deleteUser,
+  getAllUsers,
   getUserById,
   updateUser,
   updateUserPassword
@@ -10,6 +11,41 @@ import { authenticate } from '../middleware/auth.js'
 const router = express.Router()
 
 router.use(authenticate)
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get all users
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 count:
+ *                   type: integer
+ *                   example: 5
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/', getAllUsers)
 
 /**
  * @swagger

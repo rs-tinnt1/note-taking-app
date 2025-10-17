@@ -1,15 +1,16 @@
-import mongoose from 'mongoose';
+/* eslint-disable no-constant-binary-expression */
+import mongoose from 'mongoose'
 
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/note-taking-app';
-    
-    await mongoose.connect(mongoURI);
-    console.log(`MongoDB connected successfully to: ${mongoURI}`);
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/note-taking-app'
+    console.log('Connecting to MongoDB...')
+    await mongoose.connect(mongoURI)
+    console.log(`MongoDB connected successfully`)
   } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
+    console.error('MongoDB connection error:', error)
+    process.exit(1)
   }
-};
+}
 
-export default connectDB;
+export default connectDB
