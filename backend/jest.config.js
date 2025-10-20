@@ -12,14 +12,19 @@ export default {
   
   // Test file patterns
   testMatch: [
-    '**/__tests__/**/*.test.js'
+    '**/__tests__/**/*.test.js',
+    '**/__tests__/**/*.integration.test.js'
   ],
   
   // Exclude helper files from test runs
   testPathIgnorePatterns: [
     '/node_modules/',
     '/src/__tests__/helpers/',
-    '/src/__tests__/unit/setup.js'
+    '/src/__tests__/unit/setup.js',
+    '/src/__tests__/integration/setup.js',
+    '/src/__tests__/integration/mocks.js',
+    '/src/__tests__/integration/helpers.js',
+    '/src/__tests__/integration/queryHelper.js'
   ],
   
   // Coverage configuration
@@ -43,5 +48,5 @@ export default {
   clearMocks: true,
   
   // Test timeout
-  testTimeout: 10000
+  testTimeout: 15000
 };
