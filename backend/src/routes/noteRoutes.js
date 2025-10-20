@@ -73,10 +73,50 @@ router.post('/', createNote)
  * @swagger
  * /notes:
  *   get:
- *     summary: Get all user's notes
+ *     summary: Get all user's notes with search and pagination
  *     tags: [Notes]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term to filter notes by title or content (case-insensitive)
+ *         example: "meeting notes"
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *         example: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Number of notes per page (max 100)
+ *         example: 20
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [createdAt, updatedAt, title]
+ *           default: createdAt
+ *         description: Field to sort by
+ *         example: createdAt
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Sort order
+ *         example: desc
  *     responses:
  *       200:
  *         description: Notes retrieved successfully
@@ -88,13 +128,40 @@ router.post('/', createNote)
  *                 success:
  *                   type: boolean
  *                   example: true
- *                 count:
- *                   type: integer
- *                   example: 5
  *                 data:
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Note'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     currentPage:
+ *                       type: integer
+ *                       example: 1
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 5
+ *                     totalCount:
+ *                       type: integer
+ *                       example: 100
+ *                     limit:
+ *                       type: integer
+ *                       example: 20
+ *                     hasNextPage:
+ *                       type: boolean
+ *                       example: true
+ *                     hasPrevPage:
+ *                       type: boolean
+ *                       example: false
+ *                 search:
+ *                   type: object
+ *                   properties:
+ *                     query:
+ *                       type: string
+ *                       example: "meeting notes"
+ *                     resultsCount:
+ *                       type: integer
+ *                       example: 5
  *       401:
  *         description: Unauthorized
  *         content:

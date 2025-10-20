@@ -11,6 +11,7 @@ export default [
       globals: {
         ...globals.node,
         ...globals.es2021,
+        ...globals.jest, // Thêm Jest globals
       },
     },
     rules: {
@@ -116,6 +117,34 @@ export default [
         ignoreTemplateLiterals: true,
         ignoreComments: true
       }]
+    }
+  },
+  {
+    // Cấu hình riêng cho test files
+    files: ['**/__tests__/**/*.js', '**/*.test.js', '**/*.spec.js'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        ...globals.jest, // Jest globals cho test files
+      },
+    },
+    rules: {
+      // Relax một số rules cho test files
+      'no-unused-vars': ['error', {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_|^mock|^Mock'
+      }],
+      'max-len': ['warn', {
+        code: 120, // Tăng độ dài dòng cho test files
+        ignoreUrls: true,
+        ignoreStrings: true,
+        ignoreTemplateLiterals: true,
+        ignoreComments: true
+      }],
+      // Cho phép console.log trong test files
+      'no-console': 'off',
     }
   },
   {

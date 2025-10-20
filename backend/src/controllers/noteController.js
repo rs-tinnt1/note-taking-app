@@ -26,16 +26,70 @@ const createNote = async (req, res) => {
   }
 }
 
-// Get all notes
+// Get all notes with search and pagination
 const getAllNotes = async (req, res) => {
   try {
     const owner = req.user.userId // Get owner from JWT
-    const notes = await Note.findNotDeleted({ owner })
-      .sort({ createdAt: -1 }) // Sort by newest first
+
+    // Extract query parameters
+    const {
+      search = '',
+      page = 1,
+      limit = 20,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = req.query
+
+    // Validate pagination parameters
+    const pageNum = Math.max(1, parseInt(page, 10))
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10))) // Max 100 records per page
+    const skip = (pageNum - 1) * limitNum
+
+    // Validate sort parameters
+    const validSortFields = ['createdAt', 'updatedAt', 'title']
+    const sortField = validSortFields.includes(sortBy) ? sortBy : 'createdAt'
+    const sortDirection = sortOrder === 'asc' ? 1 : -1
+
+    // Build search query
+    const searchQuery = { owner, deletedAt: null }
+
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i') // Case-insensitive search
+      searchQuery.$or = [
+        { title: searchRegex },
+        { content: searchRegex }
+      ]
+    }
+
+    // Get total count for pagination info
+    const totalCount = await Note.countDocuments(searchQuery)
+
+    // Get notes with pagination and sorting
+    const notes = await Note.find(searchQuery)
+      .sort({ [sortField]: sortDirection })
+      .skip(skip)
+      .limit(limitNum)
+
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalCount / limitNum)
+    const hasNextPage = pageNum < totalPages
+    const hasPrevPage = pageNum > 1
+
     res.status(200).json({
       success: true,
-      count: notes.length,
-      data: notes
+      data: notes,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalCount,
+        limit: limitNum,
+        hasNextPage,
+        hasPrevPage
+      },
+      search: {
+        query: search,
+        resultsCount: notes.length
+      }
     })
   } catch (error) {
     res.status(500).json({

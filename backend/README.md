@@ -7,6 +7,7 @@ A Node.js/Express backend API for a note-taking application with JWT authenticat
 - JWT Authentication with access and refresh tokens
 - User CRUD operations with password encryption
 - Note CRUD operations with user ownership
+- Welcome email notifications via SendGrid
 - Logical deletion (soft delete) for all entities
 - MongoDB integration with Mongoose
 - CORS support
@@ -37,6 +38,11 @@ JWT_ACCESS_EXPIRY=15m
 JWT_REFRESH_EXPIRY=7d
 CORS_ORIGIN=http://localhost:3000
 CORS_CREDENTIALS=true
+
+# SendGrid Email Configuration (Optional)
+SENDGRID_API_KEY=SG.your-actual-api-key-here
+FROM_EMAIL=noreply@yourdomain.com
+FROM_NAME=Note Taking App
 ```
 
 ## Installation
@@ -44,6 +50,30 @@ CORS_CREDENTIALS=true
 ```bash
 npm install
 ```
+
+## Email Setup (Optional)
+
+To enable welcome email notifications:
+
+1. Create a SendGrid account at [sendgrid.com](https://sendgrid.com)
+2. Generate an API key in your SendGrid dashboard:
+   - Go to Settings → API Keys
+   - Click "Create API Key"
+   - Choose "Restricted Access" and give it "Mail Send" permissions
+   - Copy the API key (it should start with "SG.")
+3. Verify a sender email address in SendGrid:
+   - Go to Settings → Sender Authentication
+   - Verify your domain or single sender
+4. Add the SendGrid configuration to your `.env` file:
+   ```env
+   SENDGRID_API_KEY=SG.your-actual-api-key-here
+   FROM_EMAIL=noreply@yourdomain.com
+   FROM_NAME=Note Taking App
+   ```
+
+**Important:** 
+- The API key must start with "SG." to be valid
+- If SendGrid is not configured or has an invalid API key, user registration will still work normally - welcome emails will simply be skipped
 
 ## Available Scripts
 

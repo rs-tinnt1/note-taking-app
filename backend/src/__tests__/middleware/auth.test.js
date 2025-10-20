@@ -1,5 +1,5 @@
 // Import mock objects first
-import { mockUserModel, setupAllMocks, resetAllMocks } from '../helpers/modelMocks.js'
+import { mockUserModel, resetAllMocks, setupAllMocks } from '../helpers/modelMocks.js'
 
 // Mock the User model first
 jest.mock('../../models/User.js', () => mockUserModel)
@@ -185,8 +185,6 @@ describe('Auth Middleware', () => {
     })
   })
 
-
-
   describe('Error Handling', () => {
     test('should handle malformed JWT', async () => {
       const response = await request(app)
@@ -207,6 +205,5 @@ describe('Auth Middleware', () => {
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('Access token required')
     })
-
   })
 })

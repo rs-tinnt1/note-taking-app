@@ -1,5 +1,5 @@
 // Import mock objects first
-import { mockUserModel, mockNoteModel, setupAllMocks, resetAllMocks } from '../helpers/modelMocks.js'
+import { mockNoteModel, mockUserModel, resetAllMocks, setupAllMocks } from '../helpers/modelMocks.js'
 
 // Mock the models first
 jest.mock('../../models/User.js', () => mockUserModel)
@@ -78,8 +78,8 @@ jest.mock('../../models/Note.js', () => {
 import request from 'supertest'
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import { createNote, getAllNotes, getNoteById, updateNote, deleteNote } from '../../controllers/noteController.js'
-import { createMockUser, createMockNote, testNoteData, createMockNoteArray } from '../helpers/mockData.js'
+import { createNote, deleteNote, getAllNotes, getNoteById, updateNote } from '../../controllers/noteController.js'
+import { createMockNote, createMockNoteArray, createMockUser, testNoteData } from '../helpers/mockData.js'
 
 // Create Express app for testing
 const app = express()
@@ -107,7 +107,7 @@ describe('NoteController', () => {
   beforeEach(() => {
     resetAllMocks()
     setupAllMocks()
-    
+
     // Setup Note model mocks
     const mockNoteModel = require('../../models/Note.js')
     mockNoteModel.findNotDeleted.mockReturnValue({
@@ -137,16 +137,22 @@ describe('NoteController', () => {
       expect(response.body.data.updatedAt).toBeDefined()
       expect(response.body.data.deletedAt).toBeNull()
     })
-
   })
 
   describe('GET /api/notes', () => {
-    test('should get all notes for user', async () => {
+    test('should get all notes for user with pagination', async () => {
       const mockUser = createMockUser()
       const mockNotes = createMockNoteArray(3, mockUser._id)
       const mockNoteModel = require('../../models/Note.js')
-      mockNoteModel.findNotDeleted.mockReturnValue({
-        sort: jest.fn().mockResolvedValue(mockNotes)
+      
+      // Mock countDocuments and find methods
+      mockNoteModel.countDocuments.mockResolvedValue(3)
+      mockNoteModel.find.mockReturnValue({
+        sort: jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockResolvedValue(mockNotes)
+          })
+        })
       })
 
       const response = await request(app)
@@ -155,18 +161,107 @@ describe('NoteController', () => {
         .expect(200)
 
       expect(response.body.success).toBe(true)
-      expect(response.body.count).toBe(3)
       expect(response.body.data).toHaveLength(3)
-      expect(response.body.data[0]).toHaveProperty('title')
-      expect(response.body.data[0]).toHaveProperty('content')
-      expect(response.body.data[0]).toHaveProperty('owner')
+      expect(response.body.pagination).toBeDefined()
+      expect(response.body.pagination.currentPage).toBe(1)
+      expect(response.body.pagination.totalPages).toBe(1)
+      expect(response.body.pagination.totalCount).toBe(3)
+      expect(response.body.pagination.limit).toBe(20)
+      expect(response.body.search).toBeDefined()
+      expect(response.body.search.query).toBe('')
+      expect(response.body.search.resultsCount).toBe(3)
+    })
+
+    test('should get notes with search query', async () => {
+      const mockUser = createMockUser()
+      const mockNotes = createMockNoteArray(2, mockUser._id)
+      const mockNoteModel = require('../../models/Note.js')
+      
+      // Mock countDocuments and find methods
+      mockNoteModel.countDocuments.mockResolvedValue(2)
+      mockNoteModel.find.mockReturnValue({
+        sort: jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockResolvedValue(mockNotes)
+          })
+        })
+      })
+
+      const response = await request(app)
+        .get('/api/notes?search=meeting')
+        .set('x-test-user-id', mockUser._id)
+        .expect(200)
+
+      expect(response.body.success).toBe(true)
+      expect(response.body.data).toHaveLength(2)
+      expect(response.body.search.query).toBe('meeting')
+      expect(response.body.search.resultsCount).toBe(2)
+    })
+
+    test('should get notes with pagination parameters', async () => {
+      const mockUser = createMockUser()
+      const mockNotes = createMockNoteArray(5, mockUser._id)
+      const mockNoteModel = require('../../models/Note.js')
+      
+      // Mock countDocuments and find methods
+      mockNoteModel.countDocuments.mockResolvedValue(25)
+      mockNoteModel.find.mockReturnValue({
+        sort: jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockResolvedValue(mockNotes)
+          })
+        })
+      })
+
+      const response = await request(app)
+        .get('/api/notes?page=2&limit=5')
+        .set('x-test-user-id', mockUser._id)
+        .expect(200)
+
+      expect(response.body.success).toBe(true)
+      expect(response.body.data).toHaveLength(5)
+      expect(response.body.pagination.currentPage).toBe(2)
+      expect(response.body.pagination.totalPages).toBe(5)
+      expect(response.body.pagination.totalCount).toBe(25)
+      expect(response.body.pagination.limit).toBe(5)
+    })
+
+    test('should get notes with sorting parameters', async () => {
+      const mockUser = createMockUser()
+      const mockNotes = createMockNoteArray(3, mockUser._id)
+      const mockNoteModel = require('../../models/Note.js')
+      
+      // Mock countDocuments and find methods
+      mockNoteModel.countDocuments.mockResolvedValue(3)
+      mockNoteModel.find.mockReturnValue({
+        sort: jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockResolvedValue(mockNotes)
+          })
+        })
+      })
+
+      const response = await request(app)
+        .get('/api/notes?sortBy=title&sortOrder=asc')
+        .set('x-test-user-id', mockUser._id)
+        .expect(200)
+
+      expect(response.body.success).toBe(true)
+      expect(response.body.data).toHaveLength(3)
     })
 
     test('should return empty array when no notes', async () => {
       const mockUser = createMockUser()
       const mockNoteModel = require('../../models/Note.js')
-      mockNoteModel.findNotDeleted.mockReturnValue({
-        sort: jest.fn().mockResolvedValue([])
+      
+      // Mock countDocuments and find methods
+      mockNoteModel.countDocuments.mockResolvedValue(0)
+      mockNoteModel.find.mockReturnValue({
+        sort: jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockResolvedValue([])
+          })
+        })
       })
 
       const response = await request(app)
@@ -175,8 +270,9 @@ describe('NoteController', () => {
         .expect(200)
 
       expect(response.body.success).toBe(true)
-      expect(response.body.count).toBe(0)
       expect(response.body.data).toHaveLength(0)
+      expect(response.body.pagination.totalCount).toBe(0)
+      expect(response.body.pagination.totalPages).toBe(0)
     })
   })
 
@@ -258,7 +354,7 @@ describe('NoteController', () => {
     test('should delete note successfully', async () => {
       const mockUser = createMockUser()
       const mockNote = createMockNote({ owner: mockUser._id })
-      
+
       mockNoteModel.findNotDeletedAndDelete.mockResolvedValue(mockNote)
 
       const response = await request(app)

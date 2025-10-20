@@ -11,7 +11,7 @@ export const createMockUser = (overrides = {}) => ({
   comparePassword: jest.fn().mockResolvedValue(true),
   softDelete: jest.fn().mockResolvedValue(),
   toJSON: function () {
-    const { password, ...userWithoutPassword } = this
+    const { password: _password, ...userWithoutPassword } = this
     return userWithoutPassword
   },
   ...overrides

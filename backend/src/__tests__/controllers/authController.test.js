@@ -113,7 +113,7 @@ jest.mock('../../models/RefreshToken.js', () => ({
 
 // Import mock objects after mocking
 import { mockRefreshTokenModel, resetAllMocks, setupAllMocks } from '../helpers/modelMocks.js'
-import { createMockRefreshToken } from '../helpers/mockData.js'
+import { createMockRefreshToken, createMockUser, testLoginData, testUserData } from '../helpers/mockData.js'
 
 // Get the mocked User model
 const mockUserModel = require('../../models/User.js')
@@ -129,7 +129,6 @@ import request from 'supertest'
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import { login, logout, refreshToken, register } from '../../controllers/authController.js'
-import { createMockUser, testLoginData, testUserData } from '../helpers/mockData.js'
 
 // Mock authService
 jest.mock('../../services/authService.js', () => ({

@@ -1,6 +1,7 @@
 import User from '../models/User.js'
 import RefreshToken from '../models/RefreshToken.js'
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../services/authService.js'
+import { sendWelcomeEmail } from '../services/emailService.js'
 
 // Register new user
 const register = async (req, res) => {
@@ -77,6 +78,11 @@ const register = async (req, res) => {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    })
+
+    // Send welcome email asynchronously (don't await - fire and forget)
+    sendWelcomeEmail(savedUser).catch(error => {
+      console.error('Welcome email failed:', error.message)
     })
 
     res.status(201).json({

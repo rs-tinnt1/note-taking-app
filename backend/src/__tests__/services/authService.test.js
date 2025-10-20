@@ -218,7 +218,7 @@ describe('AuthService', () => {
 
       const token = authService.generateAccessToken(testUser._id, testUser.email, testUser.name)
       const decoded = jwt.verify(token, 'your-secret-key')
-      
+
       expect(decoded.userId).toBe(testUser._id.toString())
       expect(decoded.type).toBe('access')
 
@@ -232,7 +232,7 @@ describe('AuthService', () => {
 
       const token = authService.generateRefreshToken(testUser._id, testUser.email)
       const decoded = jwt.verify(token, 'your-refresh-secret-key')
-      
+
       expect(decoded.userId).toBe(testUser._id.toString())
       expect(decoded.type).toBe('refresh')
 
