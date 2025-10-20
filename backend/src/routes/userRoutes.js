@@ -2,11 +2,13 @@ import express from 'express'
 import {
   deleteUser,
   getAllUsers,
+  getUserAvatar,
   getUserById,
   updateUser,
   updateUserPassword
 } from '../controllers/userController.js'
 import { authenticate } from '../middleware/auth.js'
+import upload from '../middleware/upload.js'
 
 const router = express.Router()
 
@@ -110,7 +112,7 @@ router.get('/:id', getUserById)
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -124,6 +126,10 @@ router.get('/:id', getUserById)
  *                 format: email
  *                 description: User's email address
  *                 example: john.updated@example.com
+ *               avatar:
+ *                 type: string
+ *                 format: binary
+ *                 description: User's avatar image (max 1MB, images only)
  *     responses:
  *       200:
  *         description: User updated successfully
@@ -156,7 +162,7 @@ router.get('/:id', getUserById)
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/:id', updateUser)
+router.put('/:id', upload.single('avatar'), updateUser)
 
 /**
  * @swagger
@@ -272,5 +278,55 @@ router.put('/:id/password', updateUserPassword)
  *               $ref: '#/components/schemas/Error'
  */
 router.delete('/:id', deleteUser)
+
+/**
+ * @swagger
+ * /users/{id}/avatar:
+ *   get:
+ *     summary: Get user avatar by ID
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *         example: 507f1f77bcf86cd799439011
+ *     responses:
+ *       200:
+ *         description: Avatar retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     avatarUrl:
+ *                       type: string
+ *                       nullable: true
+ *                       description: URL to the avatar image or null if no avatar
+ *                       example: "/uploads/avatars/1234567890-avatar.jpg"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/:id/avatar', getUserAvatar)
 
 export default router

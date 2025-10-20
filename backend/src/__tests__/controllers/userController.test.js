@@ -181,10 +181,7 @@ describe('UserController', () => {
     })
 
     test('should return 404 for non-existent user', async () => {
-      mockUserModel.findOneNotDeleted.mockResolvedValue(null) // No duplicate email
-      mockUserModel.findNotDeletedAndUpdate.mockReturnValue({
-        select: jest.fn().mockResolvedValue(null)
-      })
+      mockUserModel.findByIdNotDeleted.mockResolvedValue(null) // User not found
 
       const response = await request(app)
         .put('/api/users/non-existent-user-id')

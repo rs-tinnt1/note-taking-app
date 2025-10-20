@@ -16,6 +16,9 @@ coverage/
 .DS_Store
 *.local
 
+# Uploads
+uploads/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

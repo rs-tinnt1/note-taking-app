@@ -144,7 +144,7 @@ describe('NoteController', () => {
       const mockUser = createMockUser()
       const mockNotes = createMockNoteArray(3, mockUser._id)
       const mockNoteModel = require('../../models/Note.js')
-      
+
       // Mock countDocuments and find methods
       mockNoteModel.countDocuments.mockResolvedValue(3)
       mockNoteModel.find.mockReturnValue({
@@ -176,7 +176,7 @@ describe('NoteController', () => {
       const mockUser = createMockUser()
       const mockNotes = createMockNoteArray(2, mockUser._id)
       const mockNoteModel = require('../../models/Note.js')
-      
+
       // Mock countDocuments and find methods
       mockNoteModel.countDocuments.mockResolvedValue(2)
       mockNoteModel.find.mockReturnValue({
@@ -202,7 +202,7 @@ describe('NoteController', () => {
       const mockUser = createMockUser()
       const mockNotes = createMockNoteArray(5, mockUser._id)
       const mockNoteModel = require('../../models/Note.js')
-      
+
       // Mock countDocuments and find methods
       mockNoteModel.countDocuments.mockResolvedValue(25)
       mockNoteModel.find.mockReturnValue({
@@ -230,7 +230,7 @@ describe('NoteController', () => {
       const mockUser = createMockUser()
       const mockNotes = createMockNoteArray(3, mockUser._id)
       const mockNoteModel = require('../../models/Note.js')
-      
+
       // Mock countDocuments and find methods
       mockNoteModel.countDocuments.mockResolvedValue(3)
       mockNoteModel.find.mockReturnValue({
@@ -253,7 +253,7 @@ describe('NoteController', () => {
     test('should return empty array when no notes', async () => {
       const mockUser = createMockUser()
       const mockNoteModel = require('../../models/Note.js')
-      
+
       // Mock countDocuments and find methods
       mockNoteModel.countDocuments.mockResolvedValue(0)
       mockNoteModel.find.mockReturnValue({
