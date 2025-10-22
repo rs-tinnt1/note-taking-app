@@ -16,6 +16,7 @@ spec:
       containers:
       - name: note-app
         image: note-taking-app:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 8080
         env:
@@ -38,7 +39,7 @@ spec:
         - name: JWT_REFRESH_EXPIRY
           value: "7d"
         - name: CORS_ORIGIN
-          value: "*"
+          value: "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001"
         - name: CORS_CREDENTIALS
           value: "true"
         volumeMounts:

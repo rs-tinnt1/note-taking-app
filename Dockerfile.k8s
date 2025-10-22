@@ -32,6 +32,9 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# Copy scripts directory first (needed for npm prepare)
+COPY scripts/ ./scripts/
+
 # Install production dependencies
 RUN npm ci --only=production && npm cache clean --force
 
