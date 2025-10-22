@@ -113,7 +113,12 @@ jest.mock('../../models/RefreshToken.js', () => ({
 
 // Import mock objects after mocking
 import { mockRefreshTokenModel, resetAllMocks, setupAllMocks } from '../helpers/modelMocks.js'
-import { createMockRefreshToken, createMockUser, testLoginData, testUserData } from '../helpers/mockData.js'
+import {
+  createMockRefreshToken,
+  createMockUser,
+  testLoginData,
+  testUserData
+} from '../helpers/mockData.js'
 
 // Get the mocked User model
 const mockUserModel = require('../../models/User.js')
@@ -165,10 +170,7 @@ describe('AuthController', () => {
       mockUserModel.findOneNotDeleted.mockResolvedValue(null) // No existing user
       mockRefreshTokenModel.createToken.mockResolvedValue(createMockRefreshToken())
 
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send(testUserData)
-        .expect(201)
+      const response = await request(app).post('/api/auth/register').send(testUserData).expect(201)
 
       expect(response.body.success).toBe(true)
       expect(response.body.data).toBeDefined()
@@ -189,10 +191,7 @@ describe('AuthController', () => {
       // Ensure no existing user for validation to work
       mockUserModel.findOneNotDeleted.mockResolvedValue(null)
 
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send(userData)
-        .expect(400)
+      const response = await request(app).post('/api/auth/register').send(userData).expect(400)
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('Email is required')
     })
@@ -207,10 +206,7 @@ describe('AuthController', () => {
       // Ensure no existing user for validation to work
       mockUserModel.findOneNotDeleted.mockResolvedValue(null)
 
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send(userData)
-        .expect(400)
+      const response = await request(app).post('/api/auth/register').send(userData).expect(400)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('Please enter a valid email')
@@ -226,10 +222,7 @@ describe('AuthController', () => {
       // Ensure no existing user for validation to work
       mockUserModel.findOneNotDeleted.mockResolvedValue(null)
 
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send(userData)
-        .expect(400)
+      const response = await request(app).post('/api/auth/register').send(userData).expect(400)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('Password must be at least 6 characters')
@@ -239,10 +232,7 @@ describe('AuthController', () => {
       const mockUser = createMockUser()
       mockUserModel.findOneNotDeleted.mockResolvedValue(mockUser) // Existing user
 
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send(testUserData)
-        .expect(400)
+      const response = await request(app).post('/api/auth/register').send(testUserData).expect(400)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('User with this email already exists')
@@ -253,10 +243,7 @@ describe('AuthController', () => {
       mockUserModel.findOneNotDeleted.mockResolvedValue(null)
       mockRefreshTokenModel.createToken.mockResolvedValue(createMockRefreshToken())
 
-      await request(app)
-        .post('/api/auth/register')
-        .send(testUserData)
-        .expect(201)
+      await request(app).post('/api/auth/register').send(testUserData).expect(201)
 
       expect(mockUserModel).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -289,10 +276,7 @@ describe('AuthController', () => {
       })
       mockRefreshTokenModel.createToken.mockResolvedValue(createMockRefreshToken())
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(testLoginData)
-        .expect(200)
+      const response = await request(app).post('/api/auth/login').send(testLoginData).expect(200)
 
       expect(response.body.success).toBe(true)
       expect(response.body.data).toBeDefined()
@@ -309,10 +293,7 @@ describe('AuthController', () => {
         password: 'password123'
       }
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(loginData)
-        .expect(400)
+      const response = await request(app).post('/api/auth/login').send(loginData).expect(400)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('Email is required')
@@ -323,10 +304,7 @@ describe('AuthController', () => {
         email: 'test@example.com'
       }
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(loginData)
-        .expect(400)
+      const response = await request(app).post('/api/auth/login').send(loginData).expect(400)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('Password is required')
@@ -337,10 +315,7 @@ describe('AuthController', () => {
         select: jest.fn().mockResolvedValue(null) // User not found
       })
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(testLoginData)
-        .expect(401)
+      const response = await request(app).post('/api/auth/login').send(testLoginData).expect(401)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('Invalid email or password')
@@ -353,10 +328,7 @@ describe('AuthController', () => {
         select: jest.fn().mockResolvedValue(mockUser)
       })
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(testLoginData)
-        .expect(401)
+      const response = await request(app).post('/api/auth/login').send(testLoginData).expect(401)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('Invalid email or password')
@@ -367,10 +339,7 @@ describe('AuthController', () => {
         select: jest.fn().mockResolvedValue(null) // Deleted user not found
       })
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(testLoginData)
-        .expect(401)
+      const response = await request(app).post('/api/auth/login').send(testLoginData).expect(401)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('Invalid email or password')
@@ -394,9 +363,7 @@ describe('AuthController', () => {
     })
 
     test('should logout successfully without refresh token', async () => {
-      const response = await request(app)
-        .post('/api/auth/logout')
-        .expect(200)
+      const response = await request(app).post('/api/auth/logout').expect(200)
 
       expect(response.body.success).toBe(true)
       expect(response.body.message).toContain('Logged out successfully')
@@ -424,9 +391,7 @@ describe('AuthController', () => {
     })
 
     test('should return 401 for missing refresh token', async () => {
-      const response = await request(app)
-        .post('/api/auth/refresh')
-        .expect(401)
+      const response = await request(app).post('/api/auth/refresh').expect(401)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('Refresh token not provided')

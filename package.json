@@ -10,7 +10,7 @@
   "type": "module",
   "main": "index.js",
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=18.15.0",
     "npm": ">=8.0.0"
   },
   "scripts": {
@@ -26,7 +26,12 @@
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --coverage --watchAll=false",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "format:lint": "prettier --write . && eslint . --fix",
+    "prepare": "node scripts/setup-husky.js",
+    "lint:staged": "lint-staged"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.6",
@@ -44,16 +49,28 @@
   "devDependencies": {
     "@babel/core": "^7.28.4",
     "@babel/preset-env": "^7.28.3",
-    "@eslint/js": "^9.37.0",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@eslint/js": "^8.57.0",
     "@types/jest": "^30.0.0",
     "babel-jest": "^30.2.0",
-    "eslint": "^9.37.0",
+    "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^16.4.0",
+    "husky": "^8.0.3",
     "jest": "^30.2.0",
+    "lint-staged": "^15.2.2",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
-    "sinon": "^21.0.0",
     "supertest": "^7.1.4"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }

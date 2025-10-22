@@ -63,29 +63,32 @@ export const createMockRefreshToken = (overrides = {}) => ({
   ...overrides
 })
 
-export const createMockUserArray = (count = 3) => Array.from({ length: count }, (_, index) =>
-  createMockUser({
-    _id: `mock-user-id-${index + 1}`,
-    name: `User ${index + 1}`,
-    email: `user${index + 1}@example.com`
-  })
-)
+export const createMockUserArray = (count = 3) =>
+  Array.from({ length: count }, (_, index) =>
+    createMockUser({
+      _id: `mock-user-id-${index + 1}`,
+      name: `User ${index + 1}`,
+      email: `user${index + 1}@example.com`
+    })
+  )
 
-export const createMockNoteArray = (count = 3, ownerId = 'mock-user-id-123') => Array.from({ length: count }, (_, index) =>
-  createMockNote(ownerId, {
-    _id: `mock-note-id-${index + 1}`,
-    title: `Note ${index + 1}`,
-    content: `Content ${index + 1}`
-  })
-)
+export const createMockNoteArray = (count = 3, ownerId = 'mock-user-id-123') =>
+  Array.from({ length: count }, (_, index) =>
+    createMockNote(ownerId, {
+      _id: `mock-note-id-${index + 1}`,
+      title: `Note ${index + 1}`,
+      content: `Content ${index + 1}`
+    })
+  )
 
-export const createMockRefreshTokenArray = (count = 3, userId = 'mock-user-id-123') => Array.from({ length: count }, (_, index) =>
-  createMockRefreshToken({
-    _id: `mock-token-id-${index + 1}`,
-    token: `mock-refresh-token-${index + 1}`,
-    userId: userId
-  })
-)
+export const createMockRefreshTokenArray = (count = 3, userId = 'mock-user-id-123') =>
+  Array.from({ length: count }, (_, index) =>
+    createMockRefreshToken({
+      _id: `mock-token-id-${index + 1}`,
+      token: `mock-refresh-token-${index + 1}`,
+      userId: userId
+    })
+  )
 
 // Common test data
 export const testUserData = {

@@ -1,8 +1,4 @@
-import {
-  createMockNote,
-  createMockRefreshToken,
-  createMockUser
-} from './helpers.js'
+import { createMockNote, createMockRefreshToken, createMockUser } from './helpers.js'
 import User from '../../models/User.js'
 import Note from '../../models/Note.js'
 import RefreshToken from '../../models/RefreshToken.js'
@@ -27,7 +23,8 @@ export const mockNotes = {
   validNote: createMockNote(),
   noteWithLongContent: createMockNote({
     title: 'Long Note',
-    content: 'This is a very long note content that exceeds the normal length for testing purposes. It should be able to handle longer content without issues.'
+    content:
+      'This is a very long note content that exceeds the normal length for testing purposes. It should be able to handle longer content without issues.'
   }),
   deletedNote: createMockNote({
     deletedAt: new Date()

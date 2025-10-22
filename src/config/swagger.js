@@ -6,7 +6,8 @@ const options = {
     info: {
       title: 'Note Taking App API',
       version: '1.0.0',
-      description: 'A comprehensive API for note-taking application with JWT authentication and logical deletion',
+      description:
+        'A comprehensive API for note-taking application with JWT authentication and logical deletion',
       contact: {
         name: 'API Support',
         email: 'support@example.com'
@@ -18,10 +19,12 @@ const options = {
     },
     servers: [
       {
-        url: process.env.NODE_ENV === 'production'
-          ? 'https://your-production-url.com/api'
-          : 'http://localhost:8080/api',
-        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
+        url:
+          process.env.NODE_ENV === 'production'
+            ? 'https://your-production-url.com/api'
+            : 'http://localhost:8080/api',
+        description:
+          process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
       }
     ],
     components: {

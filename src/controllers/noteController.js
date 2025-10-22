@@ -55,10 +55,7 @@ const getAllNotes = async (req, res) => {
 
     if (search && search.trim()) {
       const searchRegex = new RegExp(search.trim(), 'i') // Case-insensitive search
-      searchQuery.$or = [
-        { title: searchRegex },
-        { content: searchRegex }
-      ]
+      searchQuery.$or = [{ title: searchRegex }, { content: searchRegex }]
     }
 
     // Get total count for pagination info
@@ -185,10 +182,4 @@ const deleteNote = async (req, res) => {
   }
 }
 
-export {
-  createNote,
-  getAllNotes,
-  getNoteById,
-  updateNote,
-  deleteNote
-}
+export { createNote, getAllNotes, getNoteById, updateNote, deleteNote }

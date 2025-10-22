@@ -57,13 +57,8 @@ import app from '../../app.js'
 import User from '../../models/User.js'
 import Note from '../../models/Note.js'
 import { createChainableQuery } from './queryHelper.js'
-import {
-  generateTestToken,
-  TEST_UPDATE_USER_DATA
-} from './helpers.js'
-import {
-  mockUsers
-} from './mocks.js'
+import { generateTestToken, TEST_UPDATE_USER_DATA } from './helpers.js'
+import { mockUsers } from './mocks.js'
 
 // Mock the models and middleware
 jest.mock('../../models/User.js')
@@ -110,10 +105,14 @@ describe('Users Integration Tests', () => {
     validToken = generateTestToken(mockUsers.validUser)
 
     // Setup default mock behaviors
-    User.findNotDeleted = jest.fn().mockReturnValue(createChainableQuery([mockUsers.validUser, mockUsers.anotherUser]))
+    User.findNotDeleted = jest
+      .fn()
+      .mockReturnValue(createChainableQuery([mockUsers.validUser, mockUsers.anotherUser]))
     User.findByIdNotDeleted = jest.fn().mockReturnValue(createChainableQuery(mockUsers.validUser))
     User.findOneNotDeleted = jest.fn()
-    User.findNotDeletedAndUpdate = jest.fn().mockReturnValue(createChainableQuery(mockUsers.validUser))
+    User.findNotDeletedAndUpdate = jest
+      .fn()
+      .mockReturnValue(createChainableQuery(mockUsers.validUser))
     User.findNotDeletedAndDelete = jest.fn().mockResolvedValue(mockUsers.validUser)
     User.findByIdAndUpdate = jest.fn()
     Note.updateMany = jest.fn()
@@ -149,8 +148,7 @@ describe('Users Integration Tests', () => {
 
     it('should return 401 when no token provided', async () => {
       // Act
-      const response = await request(app)
-        .get('/api/users')
+      const response = await request(app).get('/api/users')
 
       // Assert
       expect(response.status).toBe(401)
@@ -188,8 +186,7 @@ describe('Users Integration Tests', () => {
 
     it('should return 401 when no token provided', async () => {
       // Act
-      const response = await request(app)
-        .get(`/api/users/${mockUsers.validUser._id}`)
+      const response = await request(app).get(`/api/users/${mockUsers.validUser._id}`)
 
       // Assert
       expect(response.status).toBe(401)
@@ -275,8 +272,7 @@ describe('Users Integration Tests', () => {
 
     it('should return 401 when no token provided', async () => {
       // Act
-      const response = await request(app)
-        .delete(`/api/users/${mockUsers.validUser._id}`)
+      const response = await request(app).delete(`/api/users/${mockUsers.validUser._id}`)
 
       // Assert
       expect(response.status).toBe(401)
@@ -317,8 +313,7 @@ describe('Users Integration Tests', () => {
 
     it('should return 401 when no token provided', async () => {
       // Act
-      const response = await request(app)
-        .get(`/api/users/${mockUsers.validUser._id}/avatar`)
+      const response = await request(app).get(`/api/users/${mockUsers.validUser._id}/avatar`)
 
       // Assert
       expect(response.status).toBe(401)

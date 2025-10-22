@@ -110,11 +110,10 @@ const updateUser = async (req, res) => {
       updateData.avatar = avatarUrl
     }
 
-    const user = await User.findNotDeletedAndUpdate(
-      { _id: id },
-      updateData,
-      { new: true, runValidators: true }
-    ).select('-password')
+    const user = await User.findNotDeletedAndUpdate({ _id: id }, updateData, {
+      new: true,
+      runValidators: true
+    }).select('-password')
 
     // Convert avatar path to full URL if needed
     if (user.avatar && !user.avatar.startsWith('http')) {
@@ -195,10 +194,7 @@ const deleteUser = async (req, res) => {
     const { id } = req.params
 
     // First, soft delete all notes belonging to this user
-    await Note.updateMany(
-      { owner: id, deletedAt: null },
-      { deletedAt: new Date() }
-    )
+    await Note.updateMany({ owner: id, deletedAt: null }, { deletedAt: new Date() })
 
     // Then soft delete the user
     const user = await User.findNotDeletedAndDelete({ _id: id })
@@ -263,11 +259,4 @@ const getUserAvatar = async (req, res) => {
   }
 }
 
-export {
-  getAllUsers,
-  getUserById,
-  updateUser,
-  updateUserPassword,
-  deleteUser,
-  getUserAvatar
-}
+export { getAllUsers, getUserById, updateUser, updateUserPassword, deleteUser, getUserAvatar }

@@ -56,14 +56,8 @@ import request from 'supertest'
 import app from '../../app.js'
 import Note from '../../models/Note.js'
 import { createChainableQuery } from './queryHelper.js'
-import {
-  generateTestToken,
-  TEST_NOTE_DATA
-} from './helpers.js'
-import {
-  mockNotes,
-  mockUsers
-} from './mocks.js'
+import { generateTestToken, TEST_NOTE_DATA } from './helpers.js'
+import { mockNotes, mockUsers } from './mocks.js'
 
 // Mock the models
 jest.mock('../../models/Note.js')
@@ -127,9 +121,7 @@ describe('Notes Integration Tests', () => {
 
     it('should return 401 when no token provided', async () => {
       // Act
-      const response = await request(app)
-        .post('/api/notes')
-        .send(TEST_NOTE_DATA)
+      const response = await request(app).post('/api/notes').send(TEST_NOTE_DATA)
 
       // Assert
       expect(response.status).toBe(401)
@@ -159,8 +151,7 @@ describe('Notes Integration Tests', () => {
 
     it('should return 401 when no token provided', async () => {
       // Act
-      const response = await request(app)
-        .get('/api/notes')
+      const response = await request(app).get('/api/notes')
 
       // Assert
       expect(response.status).toBe(401)
@@ -201,8 +192,7 @@ describe('Notes Integration Tests', () => {
 
     it('should return 401 when no token provided', async () => {
       // Act
-      const response = await request(app)
-        .get(`/api/notes/${mockNotes.validNote._id}`)
+      const response = await request(app).get(`/api/notes/${mockNotes.validNote._id}`)
 
       // Assert
       expect(response.status).toBe(401)
@@ -288,8 +278,7 @@ describe('Notes Integration Tests', () => {
 
     it('should return 401 when no token provided', async () => {
       // Act
-      const response = await request(app)
-        .delete(`/api/notes/${mockNotes.validNote._id}`)
+      const response = await request(app).delete(`/api/notes/${mockNotes.validNote._id}`)
 
       // Assert
       expect(response.status).toBe(401)

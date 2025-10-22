@@ -1,30 +1,33 @@
 import mongoose from 'mongoose'
 
-const noteSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: [true, 'Title is required'],
-    trim: true,
-    maxlength: [100, 'Title cannot exceed 100 characters']
+const noteSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, 'Title is required'],
+      trim: true,
+      maxlength: [100, 'Title cannot exceed 100 characters']
+    },
+    content: {
+      type: String,
+      required: [true, 'Content is required'],
+      trim: true,
+      maxlength: [1000, 'Content cannot exceed 1000 characters']
+    },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'Note must belong to a user']
+    },
+    deletedAt: {
+      type: Date,
+      default: null
+    }
   },
-  content: {
-    type: String,
-    required: [true, 'Content is required'],
-    trim: true,
-    maxlength: [1000, 'Content cannot exceed 1000 characters']
-  },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'Note must belong to a user']
-  },
-  deletedAt: {
-    type: Date,
-    default: null
+  {
+    timestamps: true
   }
-}, {
-  timestamps: true
-})
+)
 
 // Static method for logical deletion
 noteSchema.statics.findNotDeleted = function (query = {}) {

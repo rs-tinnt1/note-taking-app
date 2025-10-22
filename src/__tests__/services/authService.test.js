@@ -47,7 +47,7 @@ describe('AuthService', () => {
 
       const now = Math.floor(Date.now() / 1000)
       const tokenExp = decoded.exp
-      const expectedExp = now + (15 * 60) // 15 minutes
+      const expectedExp = now + 15 * 60 // 15 minutes
 
       // Allow 5 seconds tolerance
       expect(Math.abs(tokenExp - expectedExp)).toBeLessThan(5)
@@ -83,7 +83,7 @@ describe('AuthService', () => {
 
       const now = Math.floor(Date.now() / 1000)
       const tokenExp = decoded.exp
-      const expectedExp = now + (7 * 24 * 60 * 60) // 7 days
+      const expectedExp = now + 7 * 24 * 60 * 60 // 7 days
 
       // Allow 5 minutes tolerance
       expect(Math.abs(tokenExp - expectedExp)).toBeLessThan(300)
@@ -177,7 +177,11 @@ describe('AuthService', () => {
     })
 
     test('should throw error for access token used as refresh token', () => {
-      const accessToken = authService.generateAccessToken(testUser._id, testUser.email, testUser.name)
+      const accessToken = authService.generateAccessToken(
+        testUser._id,
+        testUser.email,
+        testUser.name
+      )
 
       expect(() => {
         authService.verifyRefreshToken(accessToken)

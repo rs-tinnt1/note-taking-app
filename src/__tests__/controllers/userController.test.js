@@ -1,5 +1,10 @@
 // Import mock objects first
-import { mockNoteModel, mockUserModel, resetAllMocks, setupAllMocks } from '../helpers/modelMocks.js'
+import {
+  mockNoteModel,
+  mockUserModel,
+  resetAllMocks,
+  setupAllMocks
+} from '../helpers/modelMocks.js'
 
 // Mock the models first
 jest.mock('../../models/User.js', () => mockUserModel)
@@ -9,7 +14,13 @@ jest.mock('../../models/Note.js', () => mockNoteModel)
 import request from 'supertest'
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import { deleteUser, getAllUsers, getUserById, updateUser, updateUserPassword } from '../../controllers/userController.js'
+import {
+  deleteUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  updateUserPassword
+} from '../../controllers/userController.js'
 import { createMockNoteArray, createMockUser, createMockUserArray } from '../helpers/mockData.js'
 
 // Create Express app for testing
@@ -49,9 +60,7 @@ describe('UserController', () => {
         })
       })
 
-      const response = await request(app)
-        .get('/api/users')
-        .expect(200)
+      const response = await request(app).get('/api/users').expect(200)
 
       expect(response.body.success).toBe(true)
       expect(response.body.count).toBe(3)
@@ -69,9 +78,7 @@ describe('UserController', () => {
         })
       })
 
-      const response = await request(app)
-        .get('/api/users')
-        .expect(200)
+      const response = await request(app).get('/api/users').expect(200)
 
       expect(response.body.success).toBe(true)
       expect(response.body.count).toBe(2)
@@ -88,9 +95,7 @@ describe('UserController', () => {
         })
       })
 
-      const response = await request(app)
-        .get('/api/users')
-        .expect(200)
+      const response = await request(app).get('/api/users').expect(200)
 
       const users = response.body.data
       for (let i = 0; i < users.length - 1; i++) {
@@ -108,9 +113,7 @@ describe('UserController', () => {
         select: jest.fn().mockResolvedValue(mockUser)
       })
 
-      const response = await request(app)
-        .get(`/api/users/${mockUser._id}`)
-        .expect(200)
+      const response = await request(app).get(`/api/users/${mockUser._id}`).expect(200)
 
       expect(response.body.success).toBe(true)
       expect(response.body.data).toBeDefined()
@@ -125,9 +128,7 @@ describe('UserController', () => {
         select: jest.fn().mockResolvedValue(null)
       })
 
-      const response = await request(app)
-        .get('/api/users/non-existent-user-id')
-        .expect(404)
+      const response = await request(app).get('/api/users/non-existent-user-id').expect(404)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('User not found')
@@ -321,9 +322,7 @@ describe('UserController', () => {
       mockUserModel.findNotDeletedAndDelete.mockResolvedValue(mockUser)
       mockNoteModel.updateMany.mockResolvedValue({ modifiedCount: 2 })
 
-      const response = await request(app)
-        .delete(`/api/users/${mockUser._id}`)
-        .expect(200)
+      const response = await request(app).delete(`/api/users/${mockUser._id}`).expect(200)
 
       expect(response.body.success).toBe(true)
       expect(response.body.message).toContain('User and all associated notes deleted successfully')
@@ -336,9 +335,7 @@ describe('UserController', () => {
     test('should return 404 for non-existent user', async () => {
       mockUserModel.findNotDeletedAndDelete.mockResolvedValue(null)
 
-      const response = await request(app)
-        .delete('/api/users/non-existent-user-id')
-        .expect(404)
+      const response = await request(app).delete('/api/users/non-existent-user-id').expect(404)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('User not found')
@@ -351,9 +348,7 @@ describe('UserController', () => {
       mockUserModel.findNotDeletedAndDelete.mockResolvedValue(mockUser)
       mockNoteModel.updateMany.mockResolvedValue({ modifiedCount: 3 })
 
-      const response = await request(app)
-        .delete(`/api/users/${mockUser._id}`)
-        .expect(200)
+      const response = await request(app).delete(`/api/users/${mockUser._id}`).expect(200)
 
       expect(response.body.success).toBe(true)
       expect(mockNoteModel.updateMany).toHaveBeenCalledWith(

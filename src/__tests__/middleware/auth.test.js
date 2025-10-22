@@ -89,9 +89,7 @@ describe('Auth Middleware', () => {
 
   describe('Invalid Token', () => {
     test('should return 401 for missing Authorization header', async () => {
-      const response = await request(app)
-        .get('/protected')
-        .expect(401)
+      const response = await request(app).get('/protected').expect(401)
 
       expect(response.body.success).toBe(false)
       expect(response.body.message).toContain('Access token required')

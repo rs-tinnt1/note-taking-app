@@ -1,6 +1,10 @@
 import User from '../models/User.js'
 import RefreshToken from '../models/RefreshToken.js'
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../services/authService.js'
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken
+} from '../services/authService.js'
 import { sendWelcomeEmail } from '../services/emailService.js'
 
 // Register new user
@@ -247,9 +251,4 @@ const refreshToken = async (req, res) => {
   }
 }
 
-export {
-  register,
-  login,
-  logout,
-  refreshToken
-}
+export { register, login, logout, refreshToken }

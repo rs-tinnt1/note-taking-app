@@ -58,12 +58,7 @@ import User from '../../models/User.js'
 import RefreshToken from '../../models/RefreshToken.js'
 import * as authService from '../../services/authService.js'
 import * as emailService from '../../services/emailService.js'
-import {
-  createMockUser,
-  generateTestToken,
-  TEST_LOGIN_DATA,
-  TEST_USER_DATA
-} from './helpers.js'
+import { createMockUser, generateTestToken, TEST_LOGIN_DATA, TEST_USER_DATA } from './helpers.js'
 import { mockUsers } from './mocks.js'
 
 // Mock the models and services
@@ -126,9 +121,7 @@ describe('Auth Integration Tests', () => {
       refreshTokenService.default.createToken.mockResolvedValue()
 
       // Act
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send(TEST_USER_DATA)
+      const response = await request(app).post('/api/auth/register').send(TEST_USER_DATA)
 
       // Assert
       expect(response.status).toBe(201)
@@ -140,8 +133,7 @@ describe('Auth Integration Tests', () => {
 
     it('should return 400 when no data provided', async () => {
       // Act
-      const response = await request(app)
-        .post('/api/auth/register')
+      const response = await request(app).post('/api/auth/register')
 
       // Assert
       expect(response.status).toBe(400)
@@ -163,9 +155,7 @@ describe('Auth Integration Tests', () => {
       authService.generateRefreshToken.mockReturnValue('refresh-token')
 
       // Act
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(TEST_LOGIN_DATA)
+      const response = await request(app).post('/api/auth/login').send(TEST_LOGIN_DATA)
 
       // Assert
       expect(response.status).toBe(200)
@@ -176,8 +166,7 @@ describe('Auth Integration Tests', () => {
 
     it('should return 400 when no data provided', async () => {
       // Act
-      const response = await request(app)
-        .post('/api/auth/login')
+      const response = await request(app).post('/api/auth/login')
 
       // Assert
       expect(response.status).toBe(500)
@@ -211,8 +200,7 @@ describe('Auth Integration Tests', () => {
 
     it('should return 401 when no token provided', async () => {
       // Act
-      const response = await request(app)
-        .post('/api/auth/logout')
+      const response = await request(app).post('/api/auth/logout')
 
       // Assert
       expect(response.status).toBe(401)
@@ -246,8 +234,7 @@ describe('Auth Integration Tests', () => {
 
     it('should return 401 when no refresh token provided', async () => {
       // Act
-      const response = await request(app)
-        .post('/api/auth/refresh')
+      const response = await request(app).post('/api/auth/refresh')
 
       // Assert
       expect(response.status).toBe(401)

@@ -62,17 +62,20 @@ export const createMockRefreshToken = (overrides = {}) => ({
 
 // JWT token generation for testing
 export const generateTestToken = (user, type = 'access') => {
-  const secret = type === 'access'
-    ? process.env.JWT_SECRET || 'test-jwt-secret-key-for-testing-only'
-    : process.env.JWT_REFRESH_SECRET || 'test-jwt-refresh-secret-key-for-testing-only'
+  const secret =
+    type === 'access'
+      ? process.env.JWT_SECRET || 'test-jwt-secret-key-for-testing-only'
+      : process.env.JWT_REFRESH_SECRET || 'test-jwt-refresh-secret-key-for-testing-only'
 
-  const payload = type === 'access'
-    ? { userId: user._id, email: user.email, name: user.name }
-    : { userId: user._id, email: user.email }
+  const payload =
+    type === 'access'
+      ? { userId: user._id, email: user.email, name: user.name }
+      : { userId: user._id, email: user.email }
 
-  const expiresIn = type === 'access'
-    ? process.env.JWT_ACCESS_EXPIRY || '15m'
-    : process.env.JWT_REFRESH_EXPIRY || '7d'
+  const expiresIn =
+    type === 'access'
+      ? process.env.JWT_ACCESS_EXPIRY || '15m'
+      : process.env.JWT_REFRESH_EXPIRY || '7d'
 
   return jwt.sign(payload, secret, { expiresIn })
 }

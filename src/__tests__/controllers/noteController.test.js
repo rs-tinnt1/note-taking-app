@@ -1,5 +1,10 @@
 // Import mock objects first
-import { mockNoteModel, mockUserModel, resetAllMocks, setupAllMocks } from '../helpers/modelMocks.js'
+import {
+  mockNoteModel,
+  mockUserModel,
+  resetAllMocks,
+  setupAllMocks
+} from '../helpers/modelMocks.js'
 
 // Mock the models first
 jest.mock('../../models/User.js', () => mockUserModel)
@@ -78,8 +83,19 @@ jest.mock('../../models/Note.js', () => {
 import request from 'supertest'
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import { createNote, deleteNote, getAllNotes, getNoteById, updateNote } from '../../controllers/noteController.js'
-import { createMockNote, createMockNoteArray, createMockUser, testNoteData } from '../helpers/mockData.js'
+import {
+  createNote,
+  deleteNote,
+  getAllNotes,
+  getNoteById,
+  updateNote
+} from '../../controllers/noteController.js'
+import {
+  createMockNote,
+  createMockNoteArray,
+  createMockUser,
+  testNoteData
+} from '../helpers/mockData.js'
 
 // Create Express app for testing
 const app = express()

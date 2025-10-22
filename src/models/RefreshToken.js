@@ -1,28 +1,31 @@
 import mongoose from 'mongoose'
 
-const refreshTokenSchema = new mongoose.Schema({
-  token: {
-    type: String,
-    required: [true, 'Token is required'],
-    unique: true
+const refreshTokenSchema = new mongoose.Schema(
+  {
+    token: {
+      type: String,
+      required: [true, 'Token is required'],
+      unique: true
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'User ID is required']
+    },
+    expiresAt: {
+      type: Date,
+      required: [true, 'Expiration date is required'],
+      index: { expireAfterSeconds: 0 } // MongoDB TTL index for automatic cleanup
+    },
+    deletedAt: {
+      type: Date,
+      default: null
+    }
   },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'User ID is required']
-  },
-  expiresAt: {
-    type: Date,
-    required: [true, 'Expiration date is required'],
-    index: { expireAfterSeconds: 0 } // MongoDB TTL index for automatic cleanup
-  },
-  deletedAt: {
-    type: Date,
-    default: null
+  {
+    timestamps: true
   }
-}, {
-  timestamps: true
-})
+)
 
 // Static method to create refresh token with automatic expiration
 refreshTokenSchema.statics.createToken = function (userId, token, expiresInDays = 7) {
@@ -38,11 +41,7 @@ refreshTokenSchema.statics.createToken = function (userId, token, expiresInDays 
 
 // Static method to find and delete token
 refreshTokenSchema.statics.findAndDelete = function (token) {
-  return this.findOneAndUpdate(
-    { token, deletedAt: null },
-    { deletedAt: new Date() },
-    { new: true }
-  )
+  return this.findOneAndUpdate({ token, deletedAt: null }, { deletedAt: new Date() }, { new: true })
 }
 
 // Static method for logical deletion
