@@ -34,12 +34,66 @@ app.use('/api/auth', authRoutes)
 app.use('/api/notes', noteRoutes)
 app.use('/api/users', userRoutes)
 
+// Health check endpoints
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  })
+})
+
+app.get('/health/ready', async (req, res) => {
+  try {
+    // Check database connection
+    const mongoose = await import('mongoose')
+    const dbState = mongoose.default.connection.readyState
+    const isDbConnected = dbState === 1
+
+    if (isDbConnected) {
+      res.status(200).json({
+        status: 'ready',
+        timestamp: new Date().toISOString(),
+        database: 'connected',
+        uptime: process.uptime()
+      })
+    } else {
+      res.status(503).json({
+        status: 'not ready',
+        timestamp: new Date().toISOString(),
+        database: 'disconnected',
+        uptime: process.uptime()
+      })
+    }
+  } catch (error) {
+    res.status(503).json({
+      status: 'not ready',
+      timestamp: new Date().toISOString(),
+      database: 'error',
+      error: error.message,
+      uptime: process.uptime()
+    })
+  }
+})
+
+app.get('/health/live', (req, res) => {
+  res.status(200).json({
+    status: 'alive',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    pid: process.pid
+  })
+})
+
 // Root route
 app.get('/', (req, res) => {
   res.json({
     message: 'Note Taking API',
     version: '1.0.0',
     documentation: '/api-docs',
+    health: '/health',
     endpoints: {
       auth: {
         'POST /api/auth/register': 'Register new user',
