@@ -1,4 +1,5 @@
 import Note from '../models/Note.js'
+import { getCachedNotes, invalidateUserNotes, setCachedNotes } from '../services/cacheService.js'
 
 // Create a new note
 const createNote = async (req, res) => {
@@ -13,6 +14,14 @@ const createNote = async (req, res) => {
     })
 
     const savedNote = await note.save()
+
+    // Invalidate user's note cache after creating a new note
+    try {
+      await invalidateUserNotes(owner)
+    } catch (cacheError) {
+      // Log cache invalidation error but don't fail the request
+      console.error('Cache invalidation error:', cacheError.message)
+    }
 
     res.status(201).json({
       success: true,
@@ -50,7 +59,35 @@ const getAllNotes = async (req, res) => {
     const sortField = validSortFields.includes(sortBy) ? sortBy : 'createdAt'
     const sortDirection = sortOrder === 'asc' ? 1 : -1
 
-    // Build search query
+    // Prepare query parameters for cache key
+    const queryParams = {
+      search,
+      page: pageNum,
+      limit: limitNum,
+      sortBy: sortField,
+      sortOrder
+    }
+
+    // Try to get cached data first
+    let cachedData = null
+    try {
+      cachedData = await getCachedNotes(owner, queryParams)
+    } catch (cacheError) {
+      console.error('Cache read error:', cacheError.message)
+    }
+
+    if (cachedData) {
+      // Return cached data
+      return res.status(200).json({
+        success: true,
+        data: cachedData.data,
+        pagination: cachedData.pagination,
+        search: cachedData.search,
+        cached: true
+      })
+    }
+
+    // Cache miss - query from MongoDB
     const searchQuery = { owner, deletedAt: null }
 
     if (search && search.trim()) {
@@ -72,7 +109,7 @@ const getAllNotes = async (req, res) => {
     const hasNextPage = pageNum < totalPages
     const hasPrevPage = pageNum > 1
 
-    res.status(200).json({
+    const responseData = {
       success: true,
       data: notes,
       pagination: {
@@ -86,8 +123,23 @@ const getAllNotes = async (req, res) => {
       search: {
         query: search,
         resultsCount: notes.length
+      },
+      cached: false
+    }
+
+    // Cache the result for future requests
+    try {
+      const cacheData = {
+        data: notes,
+        pagination: responseData.pagination,
+        search: responseData.search
       }
-    })
+      await setCachedNotes(owner, queryParams, cacheData)
+    } catch (cacheError) {
+      console.error('Cache write error:', cacheError.message)
+    }
+
+    res.status(200).json(responseData)
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -143,6 +195,14 @@ const updateNote = async (req, res) => {
       })
     }
 
+    // Invalidate user's note cache after updating a note
+    try {
+      await invalidateUserNotes(owner)
+    } catch (cacheError) {
+      // Log cache invalidation error but don't fail the request
+      console.error('Cache invalidation error:', cacheError.message)
+    }
+
     res.status(200).json({
       success: true,
       data: note
@@ -170,6 +230,14 @@ const deleteNote = async (req, res) => {
       })
     }
 
+    // Invalidate user's note cache after deleting a note
+    try {
+      await invalidateUserNotes(owner)
+    } catch (cacheError) {
+      // Log cache invalidation error but don't fail the request
+      console.error('Cache invalidation error:', cacheError.message)
+    }
+
     res.status(200).json({
       success: true,
       message: 'Note deleted successfully'
@@ -182,4 +250,4 @@ const deleteNote = async (req, res) => {
   }
 }
 
-export { createNote, getAllNotes, getNoteById, updateNote, deleteNote }
+export { createNote, deleteNote, getAllNotes, getNoteById, updateNote }

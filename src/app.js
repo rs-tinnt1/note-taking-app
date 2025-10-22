@@ -1,11 +1,11 @@
-import express from 'express'
-import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
+import express from 'express'
 import swaggerUi from 'swagger-ui-express'
 import swaggerSpecs from './config/swagger.js'
+import authRoutes from './routes/authRoutes.js'
 import noteRoutes from './routes/noteRoutes.js'
 import userRoutes from './routes/userRoutes.js'
-import authRoutes from './routes/authRoutes.js'
 
 const app = express()
 
@@ -55,11 +55,16 @@ app.get('/health/ready', async (req, res) => {
     const dbState = mongoose.default.connection.readyState
     const isDbConnected = dbState === 1
 
+    // Check Redis connection (optional)
+    const { isConnected: isRedisConnected } = await import('./config/redis.js')
+    const redisStatus = isRedisConnected() ? 'connected' : 'disconnected'
+
     if (isDbConnected) {
       res.status(200).json({
         status: 'ready',
         timestamp: new Date().toISOString(),
         database: 'connected',
+        cache: redisStatus,
         uptime: process.uptime()
       })
     } else {
@@ -67,6 +72,7 @@ app.get('/health/ready', async (req, res) => {
         status: 'not ready',
         timestamp: new Date().toISOString(),
         database: 'disconnected',
+        cache: redisStatus,
         uptime: process.uptime()
       })
     }
@@ -75,6 +81,7 @@ app.get('/health/ready', async (req, res) => {
       status: 'not ready',
       timestamp: new Date().toISOString(),
       database: 'error',
+      cache: 'unknown',
       error: error.message,
       uptime: process.uptime()
     })
