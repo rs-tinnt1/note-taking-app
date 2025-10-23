@@ -30,6 +30,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "format:lint": "prettier --write . && eslint . --fix",
+    "validate:deploy": "node scripts/validate-deployment.js",
     "prepare": "node scripts/setup-husky.js",
     "lint:staged": "lint-staged"
   },

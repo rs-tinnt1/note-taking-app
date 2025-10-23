@@ -56,4 +56,53 @@ Thumbs.db
 
 # Development files
 docker-compose*.yml
+Dockerfile*
+.dockerignore
 Makefile
+
+# Documentation
+docs/
+README.md
+*.md
+!CHANGELOG.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.husky/
+commitlint.config.js
+
+# Kubernetes
+k8s/
+
+# Scripts (build handled by Cloud Build)
+scripts/
+
+# Nginx configs
+nginx/
+
+# Test files
+**/__tests__/
+**/*.test.js
+**/*.spec.js
+jest.config.js
+babel.config.cjs
+
+# Linting/formatting
+.eslintrc*
+eslint.config.js
+.prettierrc*
+.editorconfig
+
+# Cloud configs
+cloudbuild.yaml
+service.yaml
+.gcloudignore
+
+# Git
+.gitignore
+.gitattributes
+
+# Uploads (will be created at runtime)
+uploads/*
+!uploads/.gitkeep

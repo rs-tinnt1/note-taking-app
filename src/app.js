@@ -12,7 +12,7 @@ const app = express()
 // Middleware
 const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || [
   'http://localhost:3000',
-  'http://localhost:3001', 
+  'http://localhost:3001',
   'http://localhost:8080',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:3001',
@@ -23,10 +23,10 @@ const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true)
-    
+
     console.log('CORS check for origin:', origin)
     console.log('Allowed origins:', allowedOrigins)
-    
+
     if (allowedOrigins.includes(origin)) {
       console.log('Origin allowed:', origin)
       callback(null, true)

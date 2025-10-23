@@ -182,6 +182,19 @@ The app uses Redis for caching note lists with the following strategy:
 
 ## 🚀 Deployment
 
+### Google Cloud Run (Recommended for Production)
+
+```powershell
+# Quick setup and deploy
+.\scripts\setup-secrets.ps1    # Setup secrets first
+.\scripts\deploy-cloudrun.ps1  # Deploy to Cloud Run
+
+# Or use Cloud Build directly
+gcloud builds submit --config cloudbuild.yaml
+```
+
+See [Cloud Run Deployment Guide](docs/CLOUD_RUN_DEPLOYMENT.md) for detailed instructions.
+
 ### Docker Compose (Development)
 
 ```bash

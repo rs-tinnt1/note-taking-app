@@ -1,0 +1,110 @@
+# GitHub Actions workflow for deploying to Google Cloud Run
+# This workflow is triggered automatically when code is pushed to master branch
+# Prerequisites:
+# 1. Create a service account in GCP with roles:
+#    - Cloud Run Admin
+#    - Service Account User
+#    - Artifact Registry Writer (or Container Registry Service Agent)
+# 2. Create service account key and add to GitHub Secrets as GCP_SA_KEY
+# 3. Add other secrets to GitHub Secrets:
+#    - GCP_PROJECT_ID: Your Google Cloud project ID
+#    - GCP_REGION: Deployment region (e.g., asia-southeast1)
+
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches: ['master']
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: ${{ secrets.GCP_REGION || 'asia-southeast1' }}
+  SERVICE_NAME: note-taking-api
+  REGISTRY: gcr.io
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test:ci
+        env:
+          NODE_ENV: test
+
+  deploy:
+    name: Deploy to Cloud Run
+    needs: test
+    runs-on: ubuntu-latest
+
+    # Only deploy on master branch
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          export_default_credentials: true
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker
+
+      - name: Build and Push Container
+        run: |
+          docker build --target production \
+            --cache-from ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
+            -t ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest \
+            .
+
+          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.SERVICE_NAME }} \
+            --image ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
+            --memory 512Mi \
+            --cpu 1 \
+            --timeout 300 \
+            --max-instances 10 \
+            --min-instances 0 \
+            --port 8080 \
+            --execution-environment gen2 \
+            --cpu-throttling \
+            --startup-cpu-boost \
+            --set-env-vars NODE_ENV=production,PORT=8080,CORS_ORIGIN=* \
+            --set-secrets MONGODB_URI=MONGODB_URI:latest,JWT_SECRET=JWT_SECRET:latest,JWT_REFRESH_SECRET=JWT_REFRESH_SECRET:latest,REDIS_URL=REDIS_URL:latest,SENDGRID_API_KEY=SENDGRID_API_KEY:latest,FROM_EMAIL=FROM_EMAIL:latest
+
+      - name: Show deployment info
+        run: |
+          echo "Service URL:"
+          gcloud run services describe ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --format 'value(status.url)'
